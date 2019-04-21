@@ -25,6 +25,7 @@ import org.gradle.internal.component.model.ExcludeMetadata;
 import org.gradle.internal.component.model.IvyArtifactName;
 import org.gradle.util.CollectionUtils;
 
+import java.util.Collection;
 import java.util.List;
 import java.util.Set;
 
@@ -40,7 +41,7 @@ public abstract class AbstractIvyDependencyDescriptorFactory implements IvyDepen
     }
 
     protected List<ExcludeMetadata> convertExcludeRules(final String configuration, Set<ExcludeRule> excludeRules) {
-        return CollectionUtils.collect((Iterable<ExcludeRule>) excludeRules, new Transformer<ExcludeMetadata, ExcludeRule>() {
+        return CollectionUtils.collect((Collection<ExcludeRule>) excludeRules, new Transformer<ExcludeMetadata, ExcludeRule>() {
             @Override
             public ExcludeMetadata transform(ExcludeRule excludeRule) {
                 return excludeRuleConverter.convertExcludeRule(excludeRule);

@@ -20,6 +20,7 @@ import org.gradle.api.Transformer;
 import org.gradle.util.CollectionUtils;
 
 import java.io.File;
+import java.util.Collection;
 import java.util.List;
 
 public class PlayRunAdapterV23X extends DefaultVersionedPlayRunAdapter {
@@ -39,7 +40,7 @@ public class PlayRunAdapterV23X extends DefaultVersionedPlayRunAdapter {
     }
 
     @Override
-    protected ClassLoader createAssetsClassLoader(File assetsJar, Iterable<File> assetsDirs, ClassLoader classLoader) {
+    protected ClassLoader createAssetsClassLoader(File assetsJar, Collection<File> assetsDirs, ClassLoader classLoader) {
         List<AssetsClassLoader.AssetDir> assetDirs = CollectionUtils.collect(assetsDirs, new Transformer<AssetsClassLoader.AssetDir, File>() {
             @Override
             public AssetsClassLoader.AssetDir transform(File file) {

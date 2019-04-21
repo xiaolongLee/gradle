@@ -19,9 +19,10 @@ package org.gradle.play.internal.run;
 import java.io.File;
 import java.io.IOException;
 import java.net.InetSocketAddress;
+import java.util.Collection;
 
 public interface VersionedPlayRunAdapter {
-    Object getBuildLink(ClassLoader classLoader, Reloader reloader, File projectPath, File applicationJar, Iterable<File> changingClasspath, File assetsJar, Iterable<File> assetsDirs) throws ClassNotFoundException;
+    Object getBuildLink(ClassLoader classLoader, Reloader reloader, File projectPath, File applicationJar, Iterable<File> changingClasspath, File assetsJar, Collection<File> assetsDirs) throws ClassNotFoundException;
 
     Object getBuildDocHandler(ClassLoader docsClassLoader, Iterable<File> classpath) throws NoSuchMethodException, ClassNotFoundException, IOException, IllegalAccessException;
 

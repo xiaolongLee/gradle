@@ -38,6 +38,7 @@ import java.lang.reflect.Method;
 import java.lang.reflect.Proxy;
 import java.net.InetSocketAddress;
 import java.net.URLClassLoader;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Queue;
 import java.util.concurrent.ConcurrentLinkedQueue;
@@ -58,10 +59,10 @@ public abstract class DefaultVersionedPlayRunAdapter implements VersionedPlayRun
 
     protected abstract Class<?> getBuildDocHandlerClass(ClassLoader docsClassLoader) throws ClassNotFoundException;
 
-    protected abstract ClassLoader createAssetsClassLoader(File assetsJar, Iterable<File> assetsDirs, ClassLoader classLoader);
+    protected abstract ClassLoader createAssetsClassLoader(File assetsJar, Collection<File> assetsDirs, ClassLoader classLoader);
 
     @Override
-    public Object getBuildLink(final ClassLoader classLoader, final Reloader reloader, final File projectPath, final File applicationJar, final Iterable<File> changingClasspath, final File assetsJar, final Iterable<File> assetsDirs) throws ClassNotFoundException {
+    public Object getBuildLink(final ClassLoader classLoader, final Reloader reloader, final File projectPath, final File applicationJar, final Iterable<File> changingClasspath, final File assetsJar, final Collection<File> assetsDirs) throws ClassNotFoundException {
         final ClassLoader assetsClassLoader = createAssetsClassLoader(assetsJar, assetsDirs, classLoader);
         final Class<? extends Throwable> playExceptionClass = Cast.uncheckedCast(classLoader.loadClass(PLAY_EXCEPTION_CLASSNAME));
 

@@ -667,7 +667,7 @@ public abstract class CollectionUtils {
         return list.isEmpty() ? null : list;
     }
 
-    public static String asCommandLine(Iterable<String> arguments) {
+    public static String asCommandLine(Collection<String> arguments) {
         return Joiner.on(" ").join(collect(arguments, Transformers.asSafeCommandLineArgument()));
     }
 }

@@ -19,6 +19,7 @@ package org.gradle.play.internal.run;
 import org.gradle.api.tasks.compile.BaseForkOptions;
 
 import java.io.File;
+import java.util.Collection;
 
 public interface PlayRunSpec {
 
@@ -32,7 +33,7 @@ public interface PlayRunSpec {
 
     File getAssetsJar();
 
-    Iterable<File> getAssetsDirs();
+    Collection<File> getAssetsDirs();
 
     File getProjectPath();
 

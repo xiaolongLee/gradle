@@ -145,7 +145,7 @@ public class JsonProjectDependencyRenderer {
     }
 
     private List<Map> createConfigurations(Project project) {
-        Iterable<Configuration> configurations = project.getConfigurations();
+        Collection<Configuration> configurations = project.getConfigurations();
         return CollectionUtils.collect(configurations, new Transformer<Map, Configuration>() {
             @Override
             public Map transform(Configuration configuration) {
@@ -171,7 +171,7 @@ public class JsonProjectDependencyRenderer {
     }
 
     private List createDependencyChildren(RenderableDependency dependency, final Set<Object> visited) {
-        Iterable<? extends RenderableDependency> children = dependency.getChildren();
+        Collection<? extends RenderableDependency> children = dependency.getChildren();
         return CollectionUtils.collect(children, new Transformer<Map, RenderableDependency>() {
             @Override
             public Map transform(RenderableDependency childDependency) {
@@ -204,7 +204,7 @@ public class JsonProjectDependencyRenderer {
     }
 
     private List createModuleInsights(final Configuration configuration) {
-        Iterable<ModuleIdentifier> modules = collectModules(configuration);
+        Collection<ModuleIdentifier> modules = collectModules(configuration);
         return CollectionUtils.collect(modules, new Transformer<Object, ModuleIdentifier>() {
             @Override
             public Object transform(ModuleIdentifier moduleIdentifier) {
@@ -280,7 +280,7 @@ public class JsonProjectDependencyRenderer {
     }
 
     private List createInsightDependencyChildren(RenderableDependency dependency, final Set<Object> visited, final Configuration configuration) {
-        Iterable<? extends RenderableDependency> children = dependency.getChildren();
+        Collection<? extends RenderableDependency> children = dependency.getChildren();
         return CollectionUtils.collect(children, new Transformer<Object, RenderableDependency>() {
             @Override
             public Object transform(RenderableDependency childDependency) {
