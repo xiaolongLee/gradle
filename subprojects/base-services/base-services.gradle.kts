@@ -42,7 +42,7 @@ testFixtures {
 
 jmh {
     withGroovyBuilder {
-        setProperty("include", listOf("HashingAlgorithmsBenchmark"))
+        setProperty("include", listOf("CollectionUtilsBenchmark"))
     }
 }
 
