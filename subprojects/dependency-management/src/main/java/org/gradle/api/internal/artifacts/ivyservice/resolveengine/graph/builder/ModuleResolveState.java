@@ -266,8 +266,8 @@ class ModuleResolveState implements CandidateModule {
         return moduleRevision;
     }
 
-    void addSelector(SelectorState selector) {
-        selectors.add(selector);
+    void addSelector(SelectorState selector, boolean delaySelection) {
+        selectors.add(selector, delaySelection);
         mergedConstraintAttributes = appendAttributes(mergedConstraintAttributes, selector);
         if (overriddenSelection) {
             assert selected != null : "An overridden module cannot have selected == null";
@@ -365,6 +365,10 @@ class ModuleResolveState implements CandidateModule {
 
 
     public boolean maybeUpdateSelection() {
+        if (selectors.checkDeferSelection()) {
+            // Let's try our shortcut ...
+            return false;
+        }
         ComponentState newSelected = selectorStateResolver.selectBest(getId(), selectors);
         if (selected == null) {
             select(newSelected);

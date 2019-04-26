@@ -32,6 +32,15 @@ public class ModuleSelectors<T extends ResolvableSelectorState> implements Itera
     private T singleSelector;
     private List<T> selectors;
     private List<T> dynamicSelectors;
+    private boolean deferSelection;
+
+    public boolean checkDeferSelection() {
+        if (deferSelection) {
+            deferSelection = false;
+            return true;
+        }
+        return false;
+    }
 
     @Override
     public Iterator<T> iterator() {
@@ -50,10 +59,11 @@ public class ModuleSelectors<T extends ResolvableSelectorState> implements Itera
         }
     }
 
-    public void add(T selector) {
+    public void add(T selector, boolean deferSelection) {
         assert !contains(selector) : "Inconsistent call to add: should only be done if the selector isn't in use";
         if (selectorsCount == 0) {
             singleSelector = selector;
+            this.deferSelection = deferSelection;
         } else if (selectorsCount == 1) {
             addSelector(singleSelector);
             addSelector(selector);
