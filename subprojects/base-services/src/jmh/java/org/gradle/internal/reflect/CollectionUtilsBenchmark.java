@@ -42,9 +42,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
  * CollectionUtilsBenchmark.collect_iterable        10  thrpt   20  17400146.689 ± 159109.940  ops/s
  * CollectionUtilsBenchmark.collect_iterable       100  thrpt   20   2044732.571 ±  22123.885  ops/s
  * CollectionUtilsBenchmark.collect_iterable      1000  thrpt   20    206728.343 ±   2648.332  ops/s
- * CollectionUtilsBenchmark.collect_set             10  thrpt   20   9334146.882 ±  52347.921  ops/s
- * CollectionUtilsBenchmark.collect_set            100  thrpt   20    585551.459 ±  15429.135  ops/s
- * CollectionUtilsBenchmark.collect_set           1000  thrpt   20     62993.322 ±   1863.450  ops/s
+ * CollectionUtilsBenchmark.collect_set             10  thrpt   20   9243910.992 ± 104211.609  ops/s
+ * CollectionUtilsBenchmark.collect_set            100  thrpt   20    692530.109 ±  19110.223  ops/s
+ * CollectionUtilsBenchmark.collect_set           1000  thrpt   20     71080.103 ±   2151.557  ops/s
  **/
 @Fork(2)
 @State(Scope.Benchmark)
