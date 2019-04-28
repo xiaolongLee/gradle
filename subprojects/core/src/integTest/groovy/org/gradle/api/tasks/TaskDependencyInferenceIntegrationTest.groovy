@@ -19,7 +19,7 @@ package org.gradle.api.tasks;
 import org.gradle.integtests.fixtures.AbstractIntegrationSpec
 import spock.lang.Unroll;
 
-class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec {
+class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec implements TasksWithInputsAndOutputs {
     def "dependency declared using task provider implies dependency on task"() {
         buildFile << """
             // verify that eager and lazy providers work
@@ -92,11 +92,11 @@ class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec {
     def "dependency declared using task output file property implies dependency on task"() {
         taskTypeWithOutputFileProperty()
         buildFile << """
-            def task = tasks.create("a", OutputFileTask) {
-                outFile = file("a.txt")
+            def task = tasks.create("a", FileProducer) {
+                output = file("a.txt")
             }
             tasks.register("b") {
-                dependsOn task.outFile
+                dependsOn task.output
             }
         """
 
@@ -110,11 +110,11 @@ class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec {
     def "dependency declared using mapped task output file property implies dependency on task and does not run mapping function"() {
         taskTypeWithOutputFileProperty()
         buildFile << """
-            def task = tasks.create("a", OutputFileTask) {
-                outFile = file("a.txt")
+            def task = tasks.create("a", FileProducer) {
+                output = file("a.txt")
             }            
             tasks.register("b") {
-                dependsOn task.outFile.map { throw new RuntimeException() }
+                dependsOn task.output.map { throw new RuntimeException() }
             }
         """
 
@@ -128,11 +128,11 @@ class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec {
     def "dependency declared using property whose value is a task output provider implies dependency on task"() {
         taskTypeWithOutputFileProperty()
         buildFile << """
-            def task = tasks.create("a", OutputFileTask) {
-                outFile = file("a.txt")
+            def task = tasks.create("a", FileProducer) {
+                output = file("a.txt")
             }
             def property = objects.fileProperty()
-            property.set(task.outFile)
+            property.set(task.output)
             tasks.register("b") {
                 dependsOn property
             }
@@ -148,11 +148,11 @@ class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec {
     def "dependency declared using flat map provider whose value is a task output property implies dependency on task"() {
         taskTypeWithOutputFileProperty()
         buildFile << """
-            def provider = tasks.register("a", OutputFileTask) {
-                outFile = file("a.txt")
+            def provider = tasks.register("a", FileProducer) {
+                output = file("a.txt")
             }
             tasks.register("b") {
-                dependsOn provider.flatMap { it.outFile }
+                dependsOn provider.flatMap { it.output }
             }
         """
 
@@ -166,11 +166,11 @@ class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec {
     def "dependency declared using property whose value is a mapped task output provider implies dependency on task and does not run mapping function"() {
         taskTypeWithOutputFileProperty()
         buildFile << """
-            def task = tasks.create("a", OutputFileTask) {
-                outFile = file("a.txt")
+            def task = tasks.create("a", FileProducer) {
+                output = file("a.txt")
             }
             def property = objects.fileProperty()
-            property.set(task.outFile.map { throw new RuntimeException() })
+            property.set(task.output.map { throw new RuntimeException() })
             tasks.register("b") {
                 dependsOn property
             }
@@ -537,79 +537,44 @@ The following types/formats are supported:
         "layout.buildDirectory.file(provider {'../in.txt' })" | _
     }
 
-    def taskTypeWithOutputFileProperty() {
+    def "input property with value of mapped task output implies dependency on the task"() {
+        taskTypeWithOutputFileProperty()
+        taskTypeWithInputProperty()
         buildFile << """
-            class OutputFileTask extends DefaultTask {
-                @OutputFile
-                final RegularFileProperty outFile = project.objects.fileProperty()
-                @TaskAction
-                def go() {
-                    outFile.get().asFile.text = "1"
-                }
+            def task = tasks.create("a", FileProducer) {
+                output = file("file.txt")
+                content = "12"
+            }
+            tasks.register("b", InputTask) {
+                inValue = task.output.map { it.asFile.text as Integer }
+                outFile = file("out.txt")
             }
         """
+
+        when:
+        run("b")
+
+        then:
+        result.assertTasksExecuted(":a", ":b")
+        file("out.txt").text == "22"
     }
 
-    def taskTypeWithMultipleOutputFiles() {
+    def "ad hoc input property with value of mapped task output implies dependency on the task"() {
+        taskTypeWithOutputFileProperty()
         buildFile << """
-            // Not using properties
-            class OutputFilesTask extends DefaultTask {
-                @OutputFile
-                File out1
-                @OutputFile
-                File out2
-                @TaskAction
-                def go() {
-                    out1.text = "1"
-                    out2.text = "2"
-                }
+            def task = tasks.create("a", FileProducer) {
+                output = file("file.txt")
+                content = "12"
+            }
+            tasks.register("b") {
+                inputs.property("value", task.output.map { it.asFile.text as Integer })
             }
         """
-    }
 
-    def taskTypeWithMultipleOutputFileProperties() {
-        buildFile << """
-            class OutputFilesTask extends DefaultTask {
-                @OutputFile
-                final RegularFileProperty out1 = project.objects.fileProperty()
-                @OutputFile
-                final RegularFileProperty out2 = project.objects.fileProperty()
-                @TaskAction
-                def go() {
-                    out1.get().asFile.text = "1"
-                    out2.get().asFile.text = "2"
-                }
-            }
-        """
-    }
+        when:
+        run("b")
 
-    def taskTypeWithInputFileProperty() {
-        buildFile << """
-            class InputFileTask extends DefaultTask {
-                @InputFile
-                final RegularFileProperty inFile = project.objects.fileProperty()
-                @OutputFile
-                final RegularFileProperty outFile = project.objects.fileProperty()
-                @TaskAction
-                def go() {
-                    outFile.get().asFile.text = inFile.get().asFile.text
-                }
-            }
-        """
-    }
-
-    def taskTypeWithInputFilesProperty() {
-        buildFile << """
-            class InputFilesTask extends DefaultTask {
-                @InputFiles
-                final inFiles = project.files()
-                @OutputFile
-                final RegularFileProperty outFile = project.objects.fileProperty()
-                @TaskAction
-                def go() {
-                    outFile.get().asFile.text = inFiles*.text.sort().join(',')
-                }
-            }
-        """
+        then:
+        result.assertTasksExecuted(":a", ":b")
     }
 }

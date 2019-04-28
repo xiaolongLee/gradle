@@ -238,14 +238,6 @@ public class DefaultFilePropertyFactory implements FilePropertyFactory {
         }
 
         @Override
-        public boolean maybeVisitBuildDependencies(TaskDependencyResolveContext context) {
-            if (!super.maybeVisitBuildDependencies(context)) {
-                getProvider().maybeVisitBuildDependencies(context);
-            }
-            return true;
-        }
-
-        @Override
         public void setFromAnyValue(Object object) {
             if (object instanceof File) {
                 set((File) object);

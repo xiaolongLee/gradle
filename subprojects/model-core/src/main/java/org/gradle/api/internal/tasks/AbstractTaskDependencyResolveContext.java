@@ -25,7 +25,7 @@ import java.nio.file.Path;
 public abstract class AbstractTaskDependencyResolveContext implements TaskDependencyResolveContext {
     @Override
     public void maybeAdd(Object dependency) {
-        if (dependency instanceof File || dependency instanceof FileSystemLocation || dependency instanceof Path) {
+        if (dependency instanceof File || dependency instanceof FileSystemLocation || dependency instanceof Path || dependency instanceof String || dependency instanceof Boolean) {
             return;
         }
         add(dependency);
