@@ -192,8 +192,8 @@ public abstract class CollectionUtils {
         return collect(Arrays.asList(list), transformer);
     }
 
-    public static <R, I> List<R> collect(List<? extends I> list, Transformer<? extends R, ? super I> transformer) {
-        return collect(list, new ArrayList<R>(list.size()), transformer);
+    public static <R, I> List<R> collect(Collection<? extends I> source, Transformer<? extends R, ? super I> transformer) {
+        return collect(source, new ArrayList<R>(source.size()), transformer);
     }
 
     public static <R, I> List<R> collect(Iterable<? extends I> source, Transformer<? extends R, ? super I> transformer) {

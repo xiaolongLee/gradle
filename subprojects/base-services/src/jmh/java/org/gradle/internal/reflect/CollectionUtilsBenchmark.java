@@ -36,9 +36,9 @@ import static java.util.concurrent.TimeUnit.SECONDS;
 
 /**
  * Benchmark                                    (size)   Mode  Cnt         Score        Error  Units
- * CollectionUtilsBenchmark.collect_collection      10  thrpt   20  17594714.598 ±  93418.600  ops/s
- * CollectionUtilsBenchmark.collect_collection     100  thrpt   20   1879849.351 ±  81698.302  ops/s
- * CollectionUtilsBenchmark.collect_collection    1000  thrpt   20    194278.105 ±   5444.248  ops/s
+ * CollectionUtilsBenchmark.collect_collection      10  thrpt   20  25044591.599 ± 470130.788  ops/s
+ * CollectionUtilsBenchmark.collect_collection     100  thrpt   20   2874923.581 ±  40558.137  ops/s
+ * CollectionUtilsBenchmark.collect_collection    1000  thrpt   20    295896.916 ±   1213.754  ops/s
  * CollectionUtilsBenchmark.collect_iterable        10  thrpt   20  17400146.689 ± 159109.940  ops/s
  * CollectionUtilsBenchmark.collect_iterable       100  thrpt   20   2044732.571 ±  22123.885  ops/s
  * CollectionUtilsBenchmark.collect_iterable      1000  thrpt   20    206728.343 ±   2648.332  ops/s
