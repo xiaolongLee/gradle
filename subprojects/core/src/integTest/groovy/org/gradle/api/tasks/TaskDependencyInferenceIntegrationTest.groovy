@@ -216,11 +216,10 @@ class TaskDependencyInferenceIntegrationTest extends AbstractIntegrationSpec imp
     }
 
     @Unroll
-    def "dependency declared using provider that returns #value fails"() {
+    def "dependency declared using #value fails"() {
         buildFile << """
-            def provider = provider { $value }
             tasks.register("b") {
-                dependsOn provider
+                dependsOn($value)
             }
         """
 
@@ -250,33 +249,120 @@ The following types/formats are supported:
     }
 
     @Unroll
-    def "dependency declared using file provider with value #value implies no task dependencies"() {
+    def "dependency declared using file #value fails"() {
+        buildFile << """
+            tasks.register("b") {
+                dependsOn($value)
+            }
+        """
+
+        when:
+        fails("b")
+        false
+
+        then:
+        failure.assertHasDescription("Could not determine the dependencies of task ':b'.")
+        failure.assertHasCause("""Cannot convert ${file(path)} to a task.
+The following types/formats are supported:
+  - A String or CharSequence task name or path
+  - A TaskReference instance
+  - A Task instance
+  - A Buildable instance
+  - A TaskDependency instance
+  - A Provider that represents a task output
+  - A Provider instance that returns any of these types
+  - A Closure instance that returns any of these types
+  - A Callable instance that returns any of these types
+  - An Iterable, Collection, Map or array instance that contains any of these types""")
+
+        where:
+        value                                             | path
+        "file('123')"                                     | '123'
+        "file('123').toPath()"                            | '123'
+        "layout.projectDirectory"                         | '.'
+        "layout.projectDirectory.file('123')"             | '123'
+        "layout.projectDirectory.dir('123')"              | '123'
+        "layout.projectDirectory.file(provider { '123'})" | '123'
+        "layout.projectDirectory.dir(provider { '123'})"  | '123'
+        "layout.buildDirectory"                           | 'build'
+        "layout.buildDirectory.file('123')"               | 'build/123'
+        "layout.buildDirectory.dir('123')"                | 'build/123'
+    }
+
+    @Unroll
+    def "dependency declared using provider that returns #value fails"() {
         buildFile << """
             def provider = provider { $value }
             tasks.register("b") {
-                dependsOn provider
+                dependsOn(provider)
+            }
+        """
+
+        when:
+        fails("b")
+
+        then:
+        failure.assertHasDescription("Could not determine the dependencies of task ':b'.")
+        failure.assertHasCause("""Cannot convert ${displayName} to a task.
+The following types/formats are supported:
+  - A String or CharSequence task name or path
+  - A TaskReference instance
+  - A Task instance
+  - A Buildable instance
+  - A TaskDependency instance
+  - A Provider that represents a task output
+  - A Provider instance that returns any of these types
+  - A Closure instance that returns any of these types
+  - A Callable instance that returns any of these types
+  - An Iterable, Collection, Map or array instance that contains any of these types""")
+
+        where:
+        value     | displayName
+        "12"      | "12"
+        "false"   | "false"
+        "[false]" | "false"
+    }
+
+    @Unroll
+    def "dependency declared using file provider with value #value fails"() {
+        buildFile << """
+            def provider = provider { $value }
+            tasks.register("b") {
+                dependsOn(provider)
             }
         """
 
 
         when:
-        run("b")
+        fails("b")
 
         then:
-        result.assertTasksExecuted(":b")
+        failure.assertHasDescription("Could not determine the dependencies of task ':b'.")
+        failure.assertHasCause("""Cannot convert ${file(path)} to a task.
+The following types/formats are supported:
+  - A String or CharSequence task name or path
+  - A TaskReference instance
+  - A Task instance
+  - A Buildable instance
+  - A TaskDependency instance
+  - A Provider that represents a task output
+  - A Provider instance that returns any of these types
+  - A Closure instance that returns any of these types
+  - A Callable instance that returns any of these types
+  - An Iterable, Collection, Map or array instance that contains any of these types""")
 
         where:
-        value                                             | _
-        "file('123')"                                     | _
-        "file('123').toPath()"                            | _
-        "layout.projectDirectory"                         | _
-        "layout.projectDirectory.file('123')"             | _
-        "layout.projectDirectory.dir('123')"              | _
-        "layout.projectDirectory.file(provider { '123'})" | _
-        "layout.projectDirectory.dir(provider { '123'})"  | _
-        "layout.buildDirectory"                           | _
-        "layout.buildDirectory.file('123')"               | _
-        "layout.buildDirectory.dir('123')"                | _
+        value                                             | path
+        "file('123')"                                     | '123'
+        "file('123').toPath()"                            | '123'
+        "layout.projectDirectory"                         | '.'
+        "layout.projectDirectory.file('123')"             | '123'
+        "layout.projectDirectory.dir('123')"              | '123'
+        "layout.projectDirectory.file(provider { '123'})" | '123'
+        "layout.projectDirectory.dir(provider { '123'})"  | '123'
+        "layout.buildDirectory"                           | 'build'
+        "layout.buildDirectory.file('123')"               | 'build/123'
+        "layout.buildDirectory.dir('123')"                | 'build/123'
     }
 
     def "dependency declared using file collection implies no task dependencies"() {
@@ -305,9 +391,9 @@ The following types/formats are supported:
 
         then:
         failure.assertHasDescription("Could not determine the dependencies of task ':a'.")
-                .assertHasCause('broken')
-                .assertHasFileName("Build file '$buildFile'")
-                .assertHasLineNumber(4)
+            .assertHasCause('broken')
+            .assertHasFileName("Build file '$buildFile'")
+            .assertHasLineNumber(4)
     }
 
     def "dependency declared using provider with no value fails"() {

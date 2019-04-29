@@ -41,7 +41,13 @@ public class StaticValue implements PropertyValue {
     @Override
     public TaskDependencyContainer getTaskDependencies() {
         if (value instanceof ProviderInternal) {
-            return (ProviderInternal) value;
+            return new TaskDependencyContainer() {
+                @Override
+                public void visitDependencies(TaskDependencyResolveContext context) {
+                    ProviderInternal<?> provider = (ProviderInternal<?>) value;
+                    provider.maybeVisitBuildDependencies(context);
+                }
+            };
         }
         return TaskDependencyContainer.EMPTY;
     }

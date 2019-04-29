@@ -23,6 +23,7 @@ import org.gradle.api.Task;
 import org.gradle.api.internal.provider.PropertyInternal;
 import org.gradle.api.internal.provider.ProviderInternal;
 import org.gradle.api.internal.tasks.TaskDependencyContainer;
+import org.gradle.api.internal.tasks.TaskDependencyResolveContext;
 import org.gradle.api.internal.tasks.properties.BeanPropertyContext;
 import org.gradle.api.internal.tasks.properties.PropertyValue;
 import org.gradle.api.internal.tasks.properties.PropertyVisitor;
@@ -93,9 +94,15 @@ public abstract class AbstractNestedRuntimeBeanNode extends RuntimeBeanNode<Obje
         @Override
         public TaskDependencyContainer getTaskDependencies() {
             if (isProvider()) {
-                Object value = valueSupplier.get();
+                final Object value = valueSupplier.get();
                 if (value instanceof ProviderInternal) {
-                    return (ProviderInternal) value;
+                    return new TaskDependencyContainer() {
+                        @Override
+                        public void visitDependencies(TaskDependencyResolveContext context) {
+                            ProviderInternal<?> provider = (ProviderInternal<?>) value;
+                            provider.maybeVisitBuildDependencies(context);
+                        }
+                    };
                 }
             }
             return TaskDependencyContainer.EMPTY;

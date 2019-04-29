@@ -23,7 +23,6 @@ import org.gradle.internal.state.Managed;
 import org.gradle.util.GUtil;
 
 import javax.annotation.Nullable;
-import java.util.Collection;
 
 public abstract class AbstractMinimalProvider<T> implements ProviderInternal<T>, Managed {
     private static final Factory FACTORY = new Factory() {
@@ -68,22 +67,6 @@ public abstract class AbstractMinimalProvider<T> implements ProviderInternal<T>,
     @Override
     public boolean maybeVisitBuildDependencies(TaskDependencyResolveContext context) {
         return false;
-    }
-
-    @Override
-    public void visitDependencies(TaskDependencyResolveContext context) {
-        if (!maybeVisitBuildDependencies(context)) {
-            T value = get();
-            // TODO - should add methods to the context that take care of this
-            if (value instanceof Collection) {
-                Collection<?> items = (Collection<?>) value;
-                for (Object item : items) {
-                    context.maybeAdd(item);
-                }
-            } else {
-                context.maybeAdd(value);
-            }
-        }
     }
 
     @Override

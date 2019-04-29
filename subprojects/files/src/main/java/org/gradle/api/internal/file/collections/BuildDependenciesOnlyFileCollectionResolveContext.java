@@ -17,6 +17,7 @@ package org.gradle.api.internal.file.collections;
 
 import org.gradle.api.Buildable;
 import org.gradle.api.Task;
+import org.gradle.api.internal.provider.ProviderInternal;
 import org.gradle.api.internal.tasks.TaskDependencyContainer;
 import org.gradle.api.internal.tasks.TaskDependencyResolveContext;
 import org.gradle.api.tasks.TaskOutputs;
@@ -53,6 +54,9 @@ public class BuildDependenciesOnlyFileCollectionResolveContext implements FileCo
         // TODO - need to sync with DefaultFileCollectionResolveContext
         if (element instanceof TaskDependencyContainer) {
             taskContext.add(element);
+        } else if (element instanceof ProviderInternal) {
+            ProviderInternal<?> provider = (ProviderInternal<?>) element;
+            provider.maybeVisitBuildDependencies(taskContext);
         } else if (element instanceof Buildable) {
             taskContext.add(element);
         } else if (element instanceof Task) {

@@ -17,13 +17,12 @@
 package org.gradle.api.internal.provider;
 
 import org.gradle.api.Transformer;
-import org.gradle.api.internal.tasks.TaskDependencyContainer;
 import org.gradle.api.internal.tasks.TaskDependencyResolveContext;
 import org.gradle.api.provider.Provider;
 
 import javax.annotation.Nullable;
 
-public interface ProviderInternal<T> extends Provider<T>, TaskDependencyContainer {
+public interface ProviderInternal<T> extends Provider<T> {
     /**
      * Return the upper bound on the type of all values that this provider may produce, if known.
      *
